@@ -567,6 +567,36 @@ class DAO
         }
     }
     
+
+    public function getLesPointsDeTrace() {return $this->lesPointsDeTrace;}
+ 
+    public function creerUnPointDeTrace($unPoint){
+        if (sizeof($this->lesPointsDeTrace) == 0)
+        {
+            $unPoint->setDistanceCumulee(0);
+            $unPoint->setTempsCumule(0);
+            $unPoint->setVitesse(0);
+        }
+        else{
+            
+            $leDernierPoint = $this->lesPointsDeTrace[sizeof($this->lesPointsDeTrace) -1];
+            $distance = Point::getDistance($leDernierPoint, $unPoint);
+            $duree = strtotime($unPoint->getDateHeure())-strtotime($leDernierPoint->getDateHeure());
+            
+            $vitesse = $distance / $duree;
+            
+            $unPoint->setDistanceCumulee($leDernierPoint->getDistanceCumulee() + $distance);
+            $unPoint->setTempsCumule($leDernierPoint->getTempsCumule() + $duree);
+            $unPoint->setVitesse($vitesse);
+            
+            
+        }
+        $this->lesPointsDeTrace[] = $unPoint;
+    }
+    
+    
+   
+    
     
     
     
