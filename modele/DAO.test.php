@@ -109,7 +109,6 @@ else {
 
 
 
-
 // test de la méthode modifierMdpUtilisateur ------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de modifierMdpUtilisateur : </h3>";
