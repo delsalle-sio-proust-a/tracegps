@@ -1044,17 +1044,21 @@ class DAO
     
     public function creerUneTrace($uneTrace)
     {
+        
+        // = $this->Trace.getId();
+       //$dateHeureDebutTrace = $this->Trace.getDateHeureDebut();
+       //$dateHeureFinTrace = $this->Trace.getDateHeureFin();
+       //$termineeTrace = $this->Trace.getTerminee();
+       //$idUtilisateurTrace = $this->Trace.getIdUtilisateur();
        // préparation de la requête
-       $txt_req1 = "insert into tracegps_utilisateurs (pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation)";
-       $txt_req1 .= " values (:pseudo, :mdpSha1, :adrMail, :numTel, :niveau, :dateCreation)";
+       $txt_req1 = "insert into tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)";
+       $txt_req1 .= " values (:dateHeureDebut, :dateHeureFin, :terminee, :idUtilisateur)";
        $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-       $req1->bindValue("pseudo", utf8_decode($unUtilisateur->getPseudo()), PDO::PARAM_STR);
-       $req1->bindValue("mdpSha1", utf8_decode(sha1($unUtilisateur->getMdpsha1())), PDO::PARAM_STR);
-       $req1->bindValue("adrMail", utf8_decode($unUtilisateur->getAdrmail()), PDO::PARAM_STR);
-       $req1->bindValue("numTel", utf8_decode($unUtilisateur->getNumTel()), PDO::PARAM_STR);
-       $req1->bindValue("niveau", utf8_decode($unUtilisateur->getNiveau()), PDO::PARAM_INT);
-       $req1->bindValue("dateCreation", utf8_decode($unUtilisateur->getDateCreation()), PDO::PARAM_STR);
+       $req1->bindValue("dateHeureDebut", utf8_decode(sha1($uneTrace->getDateHeureDebut())), PDO::PARAM_STR);
+       $req1->bindValue("dateHeureFin", utf8_decode($uneTrace->getDateHeureFin()), PDO::PARAM_STR);
+       $req1->bindValue("terminee", utf8_decode($uneTrace->getTerminee()), PDO::PARAM_INT);
+       $req1->bindValue("idUtilisateur", utf8_decode($uneTrace->getIdUtilisateur()), PDO::PARAM_INT);
             // exécution de la requête
        $ok = $req1->execute();
             // sortir en cas d'échec
@@ -1062,14 +1066,48 @@ class DAO
             
             // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
         $unId = $this->cnx->lastInsertId();
-        $unUtilisateur->setId($unId);
+        $uneTrace->setId($unId);
         return true;
 
         
     }
         
     
-    
+    public function supprimerUneTrace($idTrace)
+    {
+        $unUtilisateur = $this->getUnUtilisateur($pseudo);
+        if ($unUtilisateur == null) {
+            return false;
+        }
+        else {
+            $idUtilisateur = $unUtilisateur->getId();
+            
+            // suppression des traces de l'utilisateur (et des points correspondants)
+            $lesTraces = $this->getLesTraces($idUtilisateur);
+            foreach ($lesTraces as $uneTrace) {
+                $this->supprimerUneTrace($uneTrace->getId());
+            }
+            
+            // préparation de la requête de suppression des autorisations
+            $txt_req1 = "delete from tracegps_traces" ;
+            $txt_req1 .= " where id = :idTrace";
+            $req1 = $this->cnx->prepare($txt_req1);
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+            // exécution de la requête
+            $ok = $req1->execute();
+            
+            // préparation de la requête de suppression de l'utilisateur
+            $txt_req2 = "delete from tracegps_utilisateurs" ;
+            $txt_req2 .= " where pseudo = :pseudo";
+            $req2 = $this->cnx->prepare($txt_req2);
+            // liaison de la requête et de ses paramètres
+            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            // exécution de la requête
+            $ok = $req2->execute();
+            return $ok;
+        }
+    }
     
     
     
