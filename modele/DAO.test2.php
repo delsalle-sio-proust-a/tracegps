@@ -31,14 +31,29 @@ include_once ('DAO.class.php');
 $dao = new DAO();
 
 
-// test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
-// modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
-echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
-// A CONTINUER .........
+// test de la méthode existePseudoUtilisateur -----------------------------------------------------
+// modifié par Pierre le 13/2020
+echo "<h3>Test de existeAdrMailUtilisateur : </h3>";
+if ($dao->existeAdrMailUtilisateur("delasalle.sio.proust.a@gmail@gmail.com")) $existe = "oui"; else $existe = "non";
+echo "<p>Existence du mail 'delasalle.sio.proust.a@gmail.com' : <b>" . $existe . "</b><br>";
+if ($dao->existeAdrMailUtilisateur("delasalle.sio.loury.t@gmail.com")) $existe = "oui"; else $existe = "non";
+echo "Existence du mail 'delasalle.sio.loury.t@gmail.com' : <b>" . $existe . "</b></br>";
+if ($dao->existeAdrMailUtilisateur("toto@gmail.com")) $existe = "oui"; else $existe = "non";
+echo "Existence du mail 'toto@gmail.com' : <b>" . $existe . "</b></p>";
 
 
 
-
+// test de la méthode getLesPointsDeTrace ---------------------------------------------------------
+// modifié par Jim le 13/8/2018
+echo "<h3>Test de getLesPointsDeTrace : </h3>";
+$lesPoints = $dao->getLesPointsDeTrace(1);
+$nbPoints = sizeof($lesPoints);
+echo "<p>Nombre de points de la trace 1 : " . $nbPoints . "</p>";
+// affichage des points
+foreach ($lesPoints as $unPoint)
+{   echo ($unPoint->toString());
+echo ('<br>');
+}
 
 
 
