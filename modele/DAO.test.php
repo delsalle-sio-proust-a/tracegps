@@ -19,7 +19,7 @@ include_once ('DAO.class.php');
 //include_once ('_DAO.mysql.class.php');
 $dao = new DAO();
 
-/*
+
 // test de la méthode getNiveauConnexion ----------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de getNiveauConnexion : </h3>";
@@ -34,10 +34,10 @@ echo "<p>Niveau de ('europa', '123456') : " . $niveau . "</br>";
 
 $niveau = $dao->getNiveauConnexion("toto", sha1("mdputilisateur"));
 echo "<p>Niveau de ('toto', 'mdputilisateur') : " . $niveau . "</br>";
-*/
 
 
-/*
+
+
 // test de la méthode existePseudoUtilisateur -----------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de existePseudoUtilisateur : </h3>";
@@ -47,10 +47,10 @@ if ($dao->existePseudoUtilisateur("europa")) $existe = "oui"; else $existe = "no
 echo "Existence de l'utilisateur 'europa' : <b>" . $existe . "</b></br>";
 if ($dao->existePseudoUtilisateur("toto")) $existe = "oui"; else $existe = "non";
 echo "Existence de l'utilisateur 'toto' : <b>" . $existe . "</b></p>";
-*/
 
 
-/*
+
+
 // test de la méthode getUnUtilisateur -----------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de getUnUtilisateur : </h3>";
@@ -75,10 +75,10 @@ if ($unUtilisateur) {
 else {
     echo "<p>L'utilisateur admon n'existe pas !</p>";
 }
-*/  
 
 
-/*
+
+
 // test de la méthode getTousLesUtilisateurs ------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de getTousLesUtilisateurs : </h3>";
@@ -90,10 +90,10 @@ foreach ($lesUtilisateurs as $unUtilisateur)
 {	echo ($unUtilisateur->toString());
     echo ('<br>');
 }
-*/
 
 
-/*
+
+
 // test de la méthode creerUnUtilisateur ----------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de creerUnUtilisateur : </h3>";
@@ -106,10 +106,10 @@ if ($ok)
 else {
     echo "<p>Echec lors de l'enregistrement de l'utilisateur !</p>";
 }
-*/
 
 
-/*
+
+
 // test de la méthode modifierMdpUtilisateur ------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de modifierMdpUtilisateur : </h3>";
@@ -129,10 +129,10 @@ if ($unUtilisateur) {
 else {
     echo "<p>L'utilisateur toto n'existe pas !</p>";
 }
-*/
 
 
-/*
+
+
 // test de la méthode supprimerUnUtilisateur ------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de supprimerUnUtilisateur : </h3>";
@@ -150,10 +150,10 @@ if ($ok) {
 else {
     echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
 }
-*/
 
 
-/*
+
+
 // test de la méthode envoyerMdp ------------------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de envoyerMdp : </h3>";
@@ -176,7 +176,7 @@ if ($ok) {
 else {
     echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
 }
-*/
+
 
 
 // Le code des tests restant à développer va être réparti entre les membres de l'équipe de développement.
