@@ -899,7 +899,7 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
+    // début de la zone attribuée au développeur 3 (theo) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
     
     public function getLesUtilisateursAutorisant($idUtilisateur)
