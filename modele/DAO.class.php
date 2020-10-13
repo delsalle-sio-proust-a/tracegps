@@ -379,7 +379,11 @@ class DAO
             
             $uneTrace = new Trace($unId, $uneDateDebut, $uneDateFin, $terminee, $idUtilisateur);
             
-            $this->getLesPointsDeTrace($idTrace);
+            $lesPoints = $this->getLesPointsDeTrace($idTrace);
+            
+            foreach($lesPoints as $leNouveauPoint){
+                $uneTrace->ajouterPoint($leNouveauPoint);
+            }
             
             
             return $uneTrace;
