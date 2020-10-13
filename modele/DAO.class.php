@@ -933,6 +933,31 @@ class DAO
     }
     
     
+    public function creerUneTrace($uneTrace)
+    {
+       // préparation de la requête
+       $txt_req1 = "insert into tracegps_utilisateurs (pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation)";
+       $txt_req1 .= " values (:pseudo, :mdpSha1, :adrMail, :numTel, :niveau, :dateCreation)";
+       $req1 = $this->cnx->prepare($txt_req1);
+            // liaison de la requête et de ses paramètres
+       $req1->bindValue("pseudo", utf8_decode($unUtilisateur->getPseudo()), PDO::PARAM_STR);
+       $req1->bindValue("mdpSha1", utf8_decode(sha1($unUtilisateur->getMdpsha1())), PDO::PARAM_STR);
+       $req1->bindValue("adrMail", utf8_decode($unUtilisateur->getAdrmail()), PDO::PARAM_STR);
+       $req1->bindValue("numTel", utf8_decode($unUtilisateur->getNumTel()), PDO::PARAM_STR);
+       $req1->bindValue("niveau", utf8_decode($unUtilisateur->getNiveau()), PDO::PARAM_INT);
+       $req1->bindValue("dateCreation", utf8_decode($unUtilisateur->getDateCreation()), PDO::PARAM_STR);
+            // exécution de la requête
+       $ok = $req1->execute();
+            // sortir en cas d'échec
+       if ( ! $ok) { return false; }
+            
+            // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
+        $unId = $this->cnx->lastInsertId();
+        $unUtilisateur->setId($unId);
+        return true;
+
+        
+    }
         
     
     
