@@ -1075,34 +1075,27 @@ class DAO
     
     public function supprimerUneTrace($idTrace)
     {
-        $unUtilisateur = $this->getUnUtilisateur($pseudo);
-        if ($unUtilisateur == null) {
+        $uneTrace = $this->getUneTrace($idTrace);
+        if ($uneTrace == null) {
             return false;
         }
         else {
-            $idUtilisateur = $unUtilisateur->getId();
             
-            // suppression des traces de l'utilisateur (et des points correspondants)
-            $lesTraces = $this->getLesTraces($idUtilisateur);
-            foreach ($lesTraces as $uneTrace) {
-                $this->supprimerUneTrace($uneTrace->getId());
-            }
-            
-            // préparation de la requête de suppression des autorisations
-            $txt_req1 = "delete from tracegps_traces" ;
-            $txt_req1 .= " where id = :idTrace";
+            // préparation de la requête de suppression des points
+            $txt_req1 = "delete from tracegps_points" ;
+            $txt_req1 .= " where idTrace = :idTrace";
             $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-            $req1->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+            $req1->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req1->execute();
             
-            // préparation de la requête de suppression de l'utilisateur
-            $txt_req2 = "delete from tracegps_utilisateurs" ;
-            $txt_req2 .= " where pseudo = :pseudo";
+            // préparation de la requête de suppression de la trace
+            $txt_req2 = "delete from tracegps_traces" ;
+            $txt_req2 .= " where id = :id";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            $req2->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
