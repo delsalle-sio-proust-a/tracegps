@@ -544,7 +544,7 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 2 (xxxxxxxxxxxxxxxxxxxx) : lignes 550 à 749
+    // début de la zone attribuée au développeur 2 (pierre) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
     public function existeAdrMailUtilisateur($adrMail) {
         // préparation de la requête de recherche
@@ -559,7 +559,7 @@ class DAO
         $req->closeCursor();
         
         // fourniture de la réponse
-        if ($nbReponses == 0) 
+        if ($nbReponses == 0)
         {
             return false;
         }
@@ -582,8 +582,6 @@ class DAO
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
-        // libère les ressources du jeu de données
-        $req->closeCursor();
         // construction d'une collection d'objets Utilisateur
         $lespointsDeTrace = array();
         // tant qu'une ligne est trouvée :
@@ -595,8 +593,8 @@ class DAO
             $unelongitude = utf8_encode($uneLigne->longitude);
             $unedateheure = utf8_encode($uneLigne->dateheure);
             $unrythmeCardio = utf8_encode($uneLigne->rythmeCardio);
-            $unealtitude = utf8_encode($uneLigne->altitude); 
-
+            $unealtitude = utf8_encode($uneLigne->altitude);
+            
             
             $unPointDeTarce = new PointDeTrace($unIdTrace, $unId, $unelatitude, $unelongitude,$unealtitude, $unedateheure, $unrythmeCardio, 0, 0, 0);
             // ajout de l'utilisateur à la collection
@@ -609,32 +607,28 @@ class DAO
         // fourniture de la collection
         return $lespointsDeTrace;
     }
-    
  
-    public function creerUnPointDeTrace($unPoint){
-        if (sizeof($this->lesPointsDeTrace) == 0)
-        {
-            $unPoint->setDistanceCumulee(0);
-            $unPoint->setTempsCumule(0);
-            $unPoint->setVitesse(0);
-        }
-        else{
-            
-            $leDernierPoint = $this->lesPointsDeTrace[sizeof($this->lesPointsDeTrace) -1];
-            $distance = Point::getDistance($leDernierPoint, $unPoint);
-            $duree = strtotime($unPoint->getDateHeure())-strtotime($leDernierPoint->getDateHeure());
-            
-            $vitesse = $distance / $duree;
-            
-            $unPoint->setDistanceCumulee($leDernierPoint->getDistanceCumulee() + $distance);
-            $unPoint->setTempsCumule($leDernierPoint->getTempsCumule() + $duree);
-            $unPoint->setVitesse($vitesse);
-            
-            
-        }
-        $this->lesPointsDeTrace[] = $unPoint;
+    public function creerUnPointDeTrace($UnPointDeTrace) {
+        // on teste si l'utilisateur existe déjà
+        
+        
+        // préparation de la requête
+        $txt_req1 = "insert into tracegps_points (idTrace,id, latitude, longitude,altitude, dateheure, rythmeCardio)";
+        $txt_req1 .= " values (:idTrace, :id, :latitude, :longitude, :altitude, :dateheure, :rythmeCardio)";
+        $req1 = $this->cnx->prepare($txt_req1);
+        // liaison de la requête et de ses paramètres
+        $req1->bindValue("idTrace", utf8_decode($UnPointDeTrace->getIdTrace()), PDO::PARAM_INT);
+        $req1->bindValue("id", utf8_decode(sha1($UnPointDeTrace->getId())), PDO::PARAM_INT);
+        $req1->bindValue("latitude", utf8_decode($UnPointDeTrace->getLatitude()), PDO::PARAM_INT);
+        $req1->bindValue("longitude", utf8_decode($UnPointDeTrace->getLongitude()), PDO::PARAM_INT);
+        $req1->bindValue("altitude", utf8_decode($UnPointDeTrace->getAltitude()), PDO::PARAM_INT);
+        $req1->bindValue("dateheure", utf8_decode($UnPointDeTrace->getDateheure()), PDO::PARAM_INT);
+        $req1->bindValue("rythmeCardio", utf8_decode($UnPointDeTrace->getRythmeCardio()), PDO::PARAM_INT);
+        // exécution de la requête
+        $ok = $req1->execute();
+        // sortir en cas d'échec
+        return $ok;
     }
-    
     
    
     
