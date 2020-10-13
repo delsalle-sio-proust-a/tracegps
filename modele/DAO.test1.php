@@ -31,12 +31,28 @@ include_once ('DAO.class.php');
 $dao = new DAO();
 
 
-// test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
-// modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
-echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
-// A CONTINUER .........
+// test de la méthode getUneTrace ----------------------------------------------------------
+// modifié par alex le 13/10/2020
 
+echo "<h3>Test de getUneTrace : </h3>";
+$uneTrace = $dao->getUneTrace(2);
+if ($uneTrace) {
+    echo "<p>La trace 2 existe : <br>" . $uneTrace->toString() . "</p>";
+}
+else {
+    echo "<p>La trace 2 n'existe pas !</p>";
+}
+$uneTrace = $dao->getUneTrace(100);
+if ($uneTrace) {
+    echo "<p>La trace 100 existe : <br>" . $uneTrace->toString() . "</p>";
+}
+else {
+    echo "<p>La trace 100 n'existe pas !</p>";
+}
 
+// test de la méthode getToutesLesTraces ----------------------------------------------------------
+// modifié par Jim le 14/8/2018
+ 
 
 
 
