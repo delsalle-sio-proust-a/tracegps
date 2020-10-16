@@ -416,10 +416,16 @@ class DAO
             $nbPoints = utf8_encode($uneLigne->nbPoints);
             
             $uneTrace =  new Trace($unId, $uneDateDebut, $uneDateFin, $terminee, $idUtilisateur,$pseudo, $nbPoints);
-            // ajout de l'utilisateur à la collection
-            $lesTraces[] = $uneTrace;
-            // extrait la ligne suivante
-            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+            
+            $lesPoints = $this->getLesPointsDeTrace();
+            foreach($lesPoints as $leNouveauPoint){
+                $uneTrace->ajouterPoint($leNouveauPoint);
+                // ajout de l'utilisateur à la collection
+                $lesTraces[] = $uneTrace;
+                // extrait la ligne suivante
+                $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+            }
+            
         }
         // libère les ressources du jeu de données
         $req->closeCursor();
@@ -1079,7 +1085,7 @@ class DAO
     
     public function supprimerUneTrace($idTrace)
     {
-        $unUtilisateur = $this->getUnUtilisateur($pseudo);
+        $unUtilisateur = $this->getUnUtilisateur($idTrace);
         if ($unUtilisateur == null) {
             return false;
         }
@@ -1106,7 +1112,7 @@ class DAO
             $txt_req2 .= " where pseudo = :pseudo";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
