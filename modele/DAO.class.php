@@ -716,6 +716,29 @@ class DAO
     }
     
     
+    public function getLesTraces($UnPointDeTrace) {
+        // on teste si l'utilisateur existe déjà
+        
+        
+        // préparation de la requête
+        $txt_req1 = "insert into tracegps_points (idTrace,id, latitude, longitude,altitude, dateheure, rythmeCardio)";
+        $txt_req1 .= " values (:idTrace, :id, :latitude, :longitude, :altitude, :dateheure, :rythmeCardio)";
+        $req1 = $this->cnx->prepare($txt_req1);
+        // liaison de la requête et de ses paramètres
+        $req1->bindValue(":idTrace", utf8_decode($UnPointDeTrace->getIdTrace()), PDO::PARAM_INT);
+        $req1->bindValue(":id", utf8_decode($UnPointDeTrace->getId()), PDO::PARAM_INT);
+        $req1->bindValue(":latitude", utf8_decode($UnPointDeTrace->getLatitude()), PDO::PARAM_INT);
+        $req1->bindValue(":longitude", utf8_decode($UnPointDeTrace->getLongitude()), PDO::PARAM_INT);
+        $req1->bindValue(":altitude", utf8_decode($UnPointDeTrace->getAltitude()), PDO::PARAM_INT);
+        $req1->bindValue(":dateheure", utf8_decode($UnPointDeTrace->getDateheure()), PDO::PARAM_INT);
+        $req1->bindValue(":rythmeCardio", utf8_decode($UnPointDeTrace->getRythmeCardio()), PDO::PARAM_INT);
+        // exécution de la requête
+        $ok = $req1->execute();
+        // sortir en cas d'échec
+        return $ok;
+    }
+    
+    
     
     
     
