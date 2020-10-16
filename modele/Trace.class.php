@@ -239,6 +239,7 @@ class Trace
             
         }
         $this->lesPointsDeTrace[] = $unPoint;
+        $this->dateHeureFin = $unPoint->getDateHeure();
     }
     
     public function viderListePoint(){

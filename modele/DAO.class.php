@@ -1108,6 +1108,33 @@ class DAO
     
     
     
+    public function terminerUneTrace($idTrace)
+    {
+        
+        $uneTrace = $this->getUneTrace($idTrace);
+        
+        if ($uneTrace->getNombrePoints() == 0){
+            
+            $dateFin = date("Y-m-d H:i:s");
+        }
+        else {
+            
+            $dernierPoint = $uneTrace->getLesPointsDeTrace()[$uneTrace->getNombrePoints()-1];
+            $dateFin = $dernierPoint->getDateHeure();
+        }
+        $uneTrace->setDateHeureFin($dateFin);
+        
+        $txt_req = "update tracegps_traces set terminee = 1, dateFin = :dateFin";
+        $txt_req .= " where id = :idTrace";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        $req->bindValue("dateFin", $dateFin, PDO::PARAM_STR);
+        // exécution de la requête
+        $ok = $req->execute();
+        return $ok;
+    }
+    
     
     
     
