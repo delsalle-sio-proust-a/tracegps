@@ -1206,7 +1206,7 @@ class DAO
             return $ok;
         }
     }
-    
+    }
     
     
     public function terminerUneTrace($idTrace)
