@@ -47,7 +47,7 @@ else {
                 $contenuMail = "Vous venez de demander un nouveau mot de passe.\n\n";
                 $contenuMail .= "Les données enregistrées sont :\n\n";
                 $contenuMail .= "Votre pseudo : " . $pseudo . "\n";
-                $contenuMail .= "Votre mot de passe : " . $password . " (nous vous conseillons de le changer lors de la prochaine connexion)\n";
+                $contenuMail .= "Votre mot de passe : " . $password . " (changement lors de la prochaine connexion)\n";
                 
                 // cette variable globale est définie dans le fichier modele/parametres.php
                 global $ADR_MAIL_EMETTEUR;
