@@ -1196,9 +1196,6 @@ class DAO
             $txt_req2 .= " where id = :id";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-
-            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
-
             $req2->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
 
             // exécution de la requête
