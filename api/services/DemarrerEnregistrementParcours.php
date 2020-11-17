@@ -37,7 +37,7 @@ else {
             // création d'un mot de passe aléatoire de 8 caractères
             $password = Outils::creerMdp();
             // enregistrement du mdp dans la BDD
-            $ok = $dao->modifierMdpUtilisateur($pseudo, $password);
+            $ok = $dao->creerUneTrace($uneTrace);
             if ( ! $ok ) {
                 $msg = "Erreur : problème lors de l'enregistrement.";
                 $code_reponse = 500;
@@ -146,13 +146,13 @@ function creerFluxXML($msg, $lesUtilisateurs)
         $elt_data->appendChild($elt_donnees);
         
         // place l'élément 'lesUtilisateurs' dans l'élément 'donnees'
-        $elt_lesUtilisateurs = $doc->createElement('lesUtilisateurs');
+        $elt = $doc->createElement('Trace');
         $elt_donnees->appendChild($elt_lesUtilisateurs);
         
         foreach ($lesUtilisateurs as $unUtilisateur)
         {
             // crée un élément vide 'utilisateur'
-            $elt_utilisateur = $doc->createElement('utilisateur');
+            $elt_utilisateur = $doc->createElement('Trace');
             // place l'élément 'utilisateur' dans l'élément 'lesUtilisateurs'
             $elt_lesUtilisateurs->appendChild($elt_utilisateur);
             
