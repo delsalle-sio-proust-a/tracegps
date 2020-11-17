@@ -61,7 +61,7 @@ else {
                 }
             }
         }
-    }
+    } 
 }
 
 // ferme la connexion à MySQL :
