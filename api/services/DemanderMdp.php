@@ -19,7 +19,7 @@ if ($lang != "json") $lang = "xml";
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
 { $msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+$code_reponse = 406; 
 }
 else {
     if ( $pseudo == "") {
