@@ -19,7 +19,7 @@ $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$pseudoConsulte = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$pseudoConsulte = ( empty($this->request['pseudoConsulte'])) ? "" : $this->request['pseudoConsulte'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
@@ -33,54 +33,54 @@ $lesTracesUtilisateur = array();
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+    $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" || $pseudoConsulte == "")
     {	$msg = "Erreur : données incomplètes.";
-    $code_reponse = 400;
+        $code_reponse = 400;
     }
     else
     {	if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-        $msg = "Erreur : authentification incorrecte.";
-        $code_reponse = 401;
+            $msg = "Erreur : authentification incorrecte.";
+            $code_reponse = 401;
         }
         else
         {	// contrôle d'existence de pseudoConsulte
             $unUtilisateur = $dao->getUnUtilisateur($pseudoConsulte);
             if ($unUtilisateur == null)
-            {  $msg = "Erreur : pseudo consulté inexistant.";
-            $code_reponse = 400;
+            {   $msg = "Erreur : pseudo consulté inexistant.";
+                $code_reponse = 400;
             }
             else
             {   // verification autorisation consultation traces
-                $idPseudo = $dao->getUnUtilisateur($pseudo);
-                $idP = $idPseudo->getId();
-                $idPseudoConsulte = $dao->getUnUtilisateur($pseudoConsulte);
-                $idPC = $idPseudoConsulte->getId();
-                if($dao->autoriseAConsulter($idPC, $idP) == false)
+                $utilisateurAutorise = $dao->getUnUtilisateur($pseudo);
+                $idAutorise = $utilisateurAutorise->getId();
+                $utilisateurAutorisant = $dao->getUnUtilisateur($pseudoConsulte);
+                $idAutorisant = $utilisateurAutorisant->getId();
+                if ($pseudo != $pseudoConsulte &&  $dao->autoriseAConsulter($idAutorisant, $idAutorise) == false)
                 {
                     $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
                     $code_reponse = 400;
                 }
                 else
-                     {	// récupération de la liste des utilisateurs à l'aide de la méthode getTouslesTracesUtilisateur de la classe DAO
-                         $unUtilisateur = $dao->getUnUtilisateur($pseudo);
-                         $lesTracesUtilisateur = $dao->getLesTraces($unUtilisateur->getId());
+                {	  // récupération de la liste des utilisateurs à l'aide de la méthode getTouslesTracesUtilisateur de la classe DAO
+                     //$unUtilisateur = $dao->getUnUtilisateur($pseudo);
+                     $lesTracesUtilisateur = $dao->getLesTraces($unUtilisateur->getId());
                     
-                         // mémorisation du nombre d'utilisateurs
-                         $nbReponses = sizeof($lesTracesUtilisateur);
-                
-                         if ($nbReponses == 0) {
-                             $msg = "Aucun utilisateur.";
-                             $code_reponse = 200;
-                         }
-                         else {
-                             $msg = $nbReponses . " utilisateur(s).";
-                             $code_reponse = 200;
-                         }
+                     // mémorisation du nombre d'utilisateurs
+                     $nbReponses = sizeof($lesTracesUtilisateur);
+                    
+                     if ($nbReponses == 0) {
+                         $msg = "Aucune trace.";
+                         $code_reponse = 200;
                      }
+                     else {
+                         $msg = $nbReponses . " utilisateur(s).";
+                         $code_reponse = 200;
+                    }
+                }
             }
         }
     }
@@ -187,39 +187,40 @@ function creerFluxXML($msg, $lesTracesUtilisateur)
         $elt_lesTracesUtilisateur = $doc->createElement('lesTracesUtilisateur');
         $elt_donnees->appendChild($elt_lesTracesUtilisateur);
         
-        foreach ($lesTracesUtilisateur as $unUtilisateur)
+       
+        foreach ($lesTracesUtilisateur as $uneTrace)
         {
             // crée un élément vide 'utilisateur'
-            $elt_utilisateur = $doc->createElement('utilisateur');
+            $elt_trace = $doc->createElement('trace');
             // place l'élément 'utilisateur' dans l'élément 'lesTracesUtilisateur'
-            $elt_lesTracesUtilisateur->appendChild($elt_utilisateur);
+            $elt_lesTracesUtilisateur->appendChild($elt_trace);
             
             // crée les éléments enfants de l'élément 'utilisateur'
-            $elt_id         = $doc->createElement('id', $unUtilisateur->getId());
-            $elt_utilisateur->appendChild($elt_id);
+            $elt_id         = $doc->createElement('id', $uneTrace->getId());
+            $elt_trace->appendChild($elt_id);
             
-            $elt_pseudo     = $doc->createElement('pseudo', $unUtilisateur->getPseudo());
-            $elt_utilisateur->appendChild($elt_pseudo);
+            $elt_dateHeureDebut     = $doc->createElement('dateHeureDebut', $uneTrace->getDateHeureDebut());
+            $elt_trace->appendChild($elt_dateHeureDebut);
             
-            $elt_adrMail    = $doc->createElement('adrMail', $unUtilisateur->getAdrMail());
-            $elt_utilisateur->appendChild($elt_adrMail);
+            $elt_terminee    = $doc->createElement('terminee', $uneTrace->getTerminee());
+            $elt_trace->appendChild($elt_terminee);
             
-            $elt_numTel     = $doc->createElement('numTel', $unUtilisateur->getNumTel());
-            $elt_utilisateur->appendChild($elt_numTel);
+            $elt_dateHeureFin     = $doc->createElement('dateHeureFin', $uneTrace->getDateHeureFin());
+            $elt_trace->appendChild($elt_dateHeureFin);
             
-            $elt_niveau     = $doc->createElement('niveau', $unUtilisateur->getNiveau());
-            $elt_utilisateur->appendChild($elt_niveau);
+            $elt_distance     = $doc->createElement('distance', $uneTrace->getDistanceTotale());
+            $elt_trace->appendChild($elt_distance);
             
-            $elt_dateCreation = $doc->createElement('dateCreation', $unUtilisateur->getDateCreation());
-            $elt_utilisateur->appendChild($elt_dateCreation);
+            $elt_idUtilisateur = $doc->createElement('idUtilisateur', $uneTrace->getIdUtilisateur());
+            $elt_trace->appendChild($elt_idUtilisateur);
             
-            $elt_nbTraces   = $doc->createElement('nbTraces', $unUtilisateur->getNbTraces());
-            $elt_utilisateur->appendChild($elt_nbTraces);
+            //$elt_nbTraces   = $doc->createElement('nbTraces', $uneTrace->getNbTraces());
+            //$elt_utilisateur->appendChild($elt_nbTraces);
             
-            if ($unUtilisateur->getNbTraces() > 0)
-            {   $elt_dateDerniereTrace = $doc->createElement('dateDerniereTrace', $unUtilisateur->getDateDerniereTrace());
-            $elt_utilisateur->appendChild($elt_dateDerniereTrace);
-            }
+            //if ($lesTracesUtilisateur->getNbTraces() > 0)
+            //{   $elt_dateDerniereTrace = $doc->createElement('dateDerniereTrace', $uneTrace->getDateDerniereTrace());
+            //$elt_trace->appendChild($elt_dateDerniereTrace);
+            //}
         }
     }
     // Mise en forme finale
@@ -273,26 +274,25 @@ function creerFluxJSON($msg, $lesTracesUtilisateur)
     else {
         // construction d'un tableau contenant les utilisateurs
         $lesObjetsDuTableau = array();
-        foreach ($lesTracesUtilisateur as $unUtilisateur)
+        foreach ($lesTracesUtilisateur as $uneTrace)
         {	// crée une ligne dans le tableau
-            $unObjetUtilisateur = array();
-            $unObjetUtilisateur["id"] = $unUtilisateur->getId();
-            $unObjetUtilisateur["pseudo"] = $unUtilisateur->getPseudo();
-            $unObjetUtilisateur["adrMail"] = $unUtilisateur->getAdrMail();
-            $unObjetUtilisateur["numTel"] = $unUtilisateur->getNumTel();
-            $unObjetUtilisateur["niveau"] = $unUtilisateur->getNiveau();
-            $unObjetUtilisateur["dateCreation"] = $unUtilisateur->getDateCreation();
-            $unObjetUtilisateur["nbTraces"] = $unUtilisateur->getNbTraces();
-            if ($unUtilisateur->getNbTraces() > 0)
-            {   $unObjetUtilisateur["dateDerniereTrace"] = $unUtilisateur->getDateDerniereTrace();
-            }
-            $lesObjetsDuTableau[] = $unObjetUtilisateur;
+            $unObjetTrace = array();
+            $unObjetTrace["id"] = $uneTrace->getId();
+            $unObjetTrace["dateHeureDebut"] = $uneTrace->getDateHeureDebut();
+            $unObjetTrace["terminee"] = $uneTrace->getTerminee();
+            $unObjetTrace["dateHeureFin"] = $uneTrace->getDateHeureFin();
+            $unObjetTrace["distance"] = $uneTrace->getDistanceTotale();
+            $unObjetTrace["idUtilisateur"] = $uneTrace->getIdUtilisateur();
+            //if ($uneTrace->getNbTraces() > 0)
+            //{   $unObjetUtilisateur["dateDerniereTrace"] = $uneTrace->getDateDerniereTrace();
+            //}
+            $lesObjetsDuTableau[] = $unObjetTrace;
         }
         // construction de l'élément "lesTracesUtilisateur"
-        $elt_utilisateur = ["lesTracesUtilisateur" => $lesObjetsDuTableau];
+        $elt_trace = ["lesTracesUtilisateur" => $lesObjetsDuTableau];
         
         // construction de l'élément "data"
-        $elt_data = ["reponse" => $msg, "donnees" => $elt_utilisateur];
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_trace];
     }
     
     // construction de la racine
