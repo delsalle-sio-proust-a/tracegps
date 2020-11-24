@@ -34,35 +34,14 @@ else {
             $code_reponse = 401;
             }
         else {
-            // création d'un mot de passe aléatoire de 8 caractères
-            $password = Outils::creerMdp();
-            // enregistrement du mdp dans la BDD
-            $ok = $dao->creerUneTrace($uneTrace);
-            if ( ! $ok ) {
-                $msg = "Erreur : problème lors de l'enregistrement.";
-                $code_reponse = 500;
-            }
-            else {
-                // envoi d'un mail de confirmation de l'enregistrement
-                $sujet = "Demande mot de passe";
-                $contenuMail = "Vous venez de demander un nouveau mot de passe.\n\n";
-                $contenuMail .= "Les données enregistrées sont :\n\n";
-                $contenuMail .= "Votre pseudo : " . $pseudo . "\n";
-                $contenuMail .= "Votre mot de passe : " . $password . " (changement lors de la prochaine connexion)\n";
+
+            $msg= 'Trace Créee';
+            $uneTrace = new Trace($dao->getLesPointsDeTrace($idTrace)+1, getdate(), null, false, $dao->getId($pseudo));	
+            
                 
-                // cette variable globale est définie dans le fichier modele/parametres.php
-                global $ADR_MAIL_EMETTEUR;
-                $adrMail = $dao->getUnUtilisateur($pseudo)->getAdrMail();
-                $ok = Outils::envoyerMail($adrMail, $sujet, $contenuMail, $ADR_MAIL_EMETTEUR);
-                if (  $ok ) {
-                    // tout a bien fonctionné
-                    $msg = "Trace créée";
-                    $code_reponse = 201;
-                }
             }
         }
     } 
-}
 
 // ferme la connexion à MySQL :
 unset($dao);
@@ -159,21 +138,10 @@ function creerFluxXML($msg, $lesUtilisateurs)
             // crée les éléments enfants de l'élément 'utilisateur'
             $elt_id         = $doc->createElement('id', $unUtilisateur->getId());
             $elt_utilisateur->appendChild($elt_id);
+
             
-            $elt_pseudo     = $doc->createElement('pseudo', $unUtilisateur->getPseudo());
-            $elt_utilisateur->appendChild($elt_pseudo);
-            
-            $elt_adrMail    = $doc->createElement('adrMail', $unUtilisateur->getAdrMail());
-            $elt_utilisateur->appendChild($elt_adrMail);
-            
-            $elt_numTel     = $doc->createElement('numTel', $unUtilisateur->getNumTel());
-            $elt_utilisateur->appendChild($elt_numTel);
-            
-            $elt_niveau     = $doc->createElement('niveau', $unUtilisateur->getNiveau());
-            $elt_utilisateur->appendChild($elt_niveau);
-            
-            $elt_dateCreation = $doc->createElement('dateCreation', $unUtilisateur->getDateCreation());
-            $elt_utilisateur->appendChild($elt_dateCreation);
+            $elt_dateheureDebut = $doc->createElement('dateheureDebut ', getdate());
+            $elt_utilisateur->appendChild($elt_dateheureDebut );
             
             $elt_nbTraces   = $doc->createElement('nbTraces', $unUtilisateur->getNbTraces());
             $elt_utilisateur->appendChild($elt_nbTraces);
