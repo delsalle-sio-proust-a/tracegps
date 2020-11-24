@@ -1,4 +1,4 @@
-    <?php
+<?php
 // Projet TraceGPS - services web
 // fichier :  api/services/DemanderUneAutorisation.php
 // Dernière mise à jour : 17/11/2020 par alexandre
@@ -24,7 +24,7 @@ $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$pseudoDest = ( empty($this->request['pseudoDestinataire'])) ? "" : $this->request['pseudoDestinataire'];
+$pseudoARetirer = ( empty($this->request['pseudoARetirer'])) ? "" : $this->request['pseudoARetirer'];
 $txtMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
 $nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
@@ -34,10 +34,10 @@ if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
-else 
+else
 {
     // Les paramètres doivent être présents et corrects
-    if ( $mdpSha1 == "" || $pseudoDest == "" || $nomPrenom == "" || $txtMessage == "" || $pseudo == "")
+    if ( $mdpSha1 == "" || $pseudoARetirer == "" || $pseudo == "")
     {	$message = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
@@ -52,45 +52,47 @@ else
         }
         else
         {
-            if ($dao->existePseudoUtilisateur($pseudoDest) == false)
+            if ($dao->existePseudoUtilisateur($pseudoARetirer) == false)
             {
                 $message = "Erreur : pseudo utilisateur inexistant";
                 $code_reponse = 401;
             }
-            else 
+            else
             {
                 $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
-                $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDest);
+                $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoARetirer);
                 $idDest = $utilisateurDestinataire->getId();
                 $idDem = $utilisateurDemandeur->getId();
                 $adrMailDestinataire = $utilisateurDestinataire->getAdrMail();
-            
-                if ($dao->autoriseAConsulter($idDest, $idDem))
-                {	$message = "Erreur : autorisation déjà accordée.";
-                    $code_reponse = 400;
+                
+                $ok = $dao->supprimerUneAutorisation($idDem, $idDest);
+                $msg = "Autorisation supprimée.";
+                if ( ! $ok ) {
+                    $msg = "Erreur : l'autorisation n'était pas accordée.";
+                    $code_reponse = 500; 
                 }
                 else
-                {   // envoi d'un mail de demande
-                    $sujetMail = "Demande d'atorisation de la part d'un utilisateur du système TraceGPS";
-                    $contenuMail = "Cher ou chère " . $pseudoDest . "\n\n";
-                    $contenuMail .= "Un utilisateur du système traceGPS vous demande l'autorisation de suivre vos parcours.\n";
-                    $contenuMail .= "Voici les données le concernant :\n\n";
-                    $contenuMail .= "Son numéro de téléphone :\n" . $utilisateurDemandeur->getNumTel();
-                    $contenuMail .= "Son nom et son prenom :" . $pseudo;
-                    $contenuMail .= "Son message :".$txtMessage;
+                {    // envoi d'un mail de suppression
+                    $sujetMail = "Demande de suppression de la part d'un utilisateur du système TraceGPS";
+                    $contenuMail = "Cher ou chère " . $pseudoARetirer . "\n\n";
+                    $contenuMail .= "Un utilisateur du système traceGPS vous retire l'autorisation de suivre ses parcours.\n";
                     
-                    $contenuMail .= "Pour accepter la demande cliquez sur ce lien :";
-                    $contenuMail .= "Pour refuser la demande cliquez sur ce lien :";
+                    $contenuMail .= "Son message :".$txtMessage."\n\n";
                     
-                    $ok = Outils::envoyerMail($adrMailDestinataire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
-                    if ( ! $ok ) {
-                        $message = "Erreur : l'envoi du courriel de demande d'autorisation a rencontré un problème.";
+                    $contenuMail .= "Cordialement."."\n\n";
+                    $contenuMail .= "L'administrateur du système TraceGPS";
+                    
+                    $ok2 = Outils::envoyerMail($adrMailDestinataire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
+                    if ( ! $ok2 ) {
+                        $message = "Erreur : l'envoi du courriel de suppression d'autorisation a rencontré un problème.";
                         $code_reponse = 500;
                     }
                     else {
-                        $message = $pseudoDest." va recevoir un courriel avec votre demande.";
+                        $message = $pseudoARetirer." va recevoir un courriel avec votre demande.";
                         $code_reponse = 200;
                     }
+                    
+                    
                 }
             }
         }
