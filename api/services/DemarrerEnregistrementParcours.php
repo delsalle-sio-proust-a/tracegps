@@ -44,7 +44,7 @@ else {
 
             $uneTrace = new Trace( $unId, $uneDateHeureDebut, $uneDateHeureFin, $terminee, $unIdUtilisateur);
             $msg = "Trace créée.";
-            $code_reponse = 300;
+            $code_reponse = 300; 
         }
     }
 }
