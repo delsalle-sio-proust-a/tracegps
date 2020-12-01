@@ -43,6 +43,7 @@ class Point
     // ------------------------------------------------------------------------------------------------------
     
     // Fournit une chaine contenant toutes les données de l'objet
+
     public function toString() {
         $msg = "latitude : " . $this->latitude . "<br>";
         $msg .= "longitude : " . $this->longitude . "<br>";
