@@ -1,13 +1,9 @@
 <?php
-// Projet TraceGPS - services web
-// fichier :  api/services/DemanderMdp.php
-// Dernière mise à jour : 3/7/2019 par Jim
-
-// Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/ChangerDeMdppseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&nouveauMdp=123&confirmationMdp=123&lang=xml
-
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
+define('TIMEZONE', 'Europe/Paris');
+date_default_timezone_set(TIMEZONE);
+
 
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
@@ -17,43 +13,51 @@ $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
+$uneTrace = null;
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
-{ $msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+{
+    $msg = "Erreur : méthode HTTP incorrecte.";
+    $code_reponse = 406;
 }
 else {
-    if ( $pseudo == ""|| $mdpSha1 == "") {
+    // Les paramètres doivent être présents
+    if ( $pseudo == "" || $mdpSha1 == ""  || $lang == "") {
         $msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
-    else{
-        // contrôle d'existence de pseudo
-        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
+    else
+    {
+        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) <= 0) {
             $msg = "Erreur : authentification incorrecte.";
             $code_reponse = 401;
-            }
-        else {
-
-            $msg= 'Trace Créee';
-            $uneTrace = new Trace($dao->getLesPointsDeTrace($idTrace)+1, getdate(), null, false, $dao->getId($pseudo));	
-            
-                
-            }
         }
-    } 
+        else
+        {
+            
+           
+            $unId = 0;
+            $uneDateHeureDebut = strftime('%Y-%m-%d %H:%M:%S');
+            $uneDateHeureFin = NULL;
+            $terminee = 0;
+            $unIdUtilisateur = $dao->getUnUtilisateur($pseudo)->getId();
 
+            $uneTrace = new Trace( $unId, $uneDateHeureDebut, $uneDateHeureFin, $terminee, $unIdUtilisateur);
+            $msg = "Trace créée.";
+            $code_reponse = 300;
+        }
+    }
+}
 // ferme la connexion à MySQL :
 unset($dao);
-
 // création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($msg);
+    $donnees = creerFluxXML($msg, $uneTrace);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($msg);
+    $donnees = creerFluxJSON($msg, $uneTrace);
 }
 
 // envoi de la réponse HTTP
@@ -65,35 +69,20 @@ exit;
 // ================================================================================================
 
 // création du flux XML en sortie
-function creerFluxXML($msg, $lesUtilisateurs)
+function creerFluxXML($msg, $uneTrace)
 {
     /* Exemple de code XML
      <?xml version="1.0" encoding="UTF-8"?>
-     <!--Service web GetTousLesUtilisateurs - BTS SIO - Lycée De La Salle - Rennes-->
+     <!--Service web DemarrerEnregistrementParcours - BTS SIO - Lycée De La Salle - Rennes-->
      <data>
-     <reponse>2 utilisateur(s).</reponse>
+     <reponse>Trace créée.</reponse>
      <donnees>
-     <lesUtilisateurs>
-     <utilisateur>
-     <id>2</id>
-     <pseudo>callisto</pseudo>
-     <adrMail>delasalle.sio.eleves@gmail.com</adrMail>
-     <numTel>22.33.44.55.66</numTel>
-     <niveau>1</niveau>
-     <dateCreation>2018-08-12 19:45:23</dateCreation>
-     <nbTraces>2</nbTraces>
-     <dateDerniereTrace>2018-01-19 13:08:48</dateDerniereTrace>
-     </utilisateur>
-     <utilisateur>
-     <id>3</id>
-     <pseudo>europa</pseudo>
-     <adrMail>delasalle.sio.eleves@gmail.com</adrMail>
-     <numTel>22.33.44.55.66</numTel>
-     <niveau>1</niveau>
-     <dateCreation>2018-08-12 19:45:23</dateCreation>
-     <nbTraces>0</nbTraces>
-     </utilisateur>
-     </lesUtilisateurs>
+     <trace>
+     <id>23</id>
+     <dateHeureDebut>2018-11-15 16:15:54</dateHeureDebut>
+     <terminee>0</terminee>
+     <idUtilisateur>3</idUtilisateur>
+     </trace>
      </donnees>
      </data>
      */
@@ -106,7 +95,7 @@ function creerFluxXML($msg, $lesUtilisateurs)
     $doc->encoding = 'UTF-8';
     
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web DemarrerEnregistrementParcours - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web GetTousLesUtilisateurs - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
     
@@ -117,40 +106,24 @@ function creerFluxXML($msg, $lesUtilisateurs)
     // place l'élément 'reponse' dans l'élément 'data'
     $elt_reponse = $doc->createElement('reponse', $msg);
     $elt_data->appendChild($elt_reponse);
-    
-    // traitement des utilisateurs
-    if (sizeof($lesUtilisateurs) > 0) {
+    if($uneTrace != null) {
         // place l'élément 'donnees' dans l'élément 'data'
         $elt_donnees = $doc->createElement('donnees');
         $elt_data->appendChild($elt_donnees);
         
         // place l'élément 'lesUtilisateurs' dans l'élément 'donnees'
-        $elt = $doc->createElement('Trace');
-        $elt_donnees->appendChild($elt_lesUtilisateurs);
+        $elt_trace = $doc->createElement('trace');
+        $elt_donnees->appendChild($elt_trace);
         
-        foreach ($lesUtilisateurs as $unUtilisateur)
-        {
-            // crée un élément vide 'utilisateur'
-            $elt_utilisateur = $doc->createElement('Trace');
-            // place l'élément 'utilisateur' dans l'élément 'lesUtilisateurs'
-            $elt_lesUtilisateurs->appendChild($elt_utilisateur);
-            
-            // crée les éléments enfants de l'élément 'utilisateur'
-            $elt_id         = $doc->createElement('id', $unUtilisateur->getId());
-            $elt_utilisateur->appendChild($elt_id);
-
-            
-            $elt_dateheureDebut = $doc->createElement('dateheureDebut ', getdate());
-            $elt_utilisateur->appendChild($elt_dateheureDebut );
-            
-            $elt_nbTraces   = $doc->createElement('nbTraces', $unUtilisateur->getNbTraces());
-            $elt_utilisateur->appendChild($elt_nbTraces);
-            
-            if ($unUtilisateur->getNbTraces() > 0)
-            {   $elt_dateDerniereTrace = $doc->createElement('dateDerniereTrace', $unUtilisateur->getDateDerniereTrace());
-            $elt_utilisateur->appendChild($elt_dateDerniereTrace);
-            }
-        }
+        $elt_id = $doc->createElement('id', $uneTrace->getId());
+        $elt_trace->appendChild($elt_id);
+        
+        $elt_dateHeureDebut = $doc->createElement('dateHeureDebut', $uneTrace->getDateHeureDebut());
+        $elt_trace->appendChild($elt_dateHeureDebut);
+        $elt_terminee = $doc->createElement('terminee', $uneTrace->getTerminee());
+        $elt_trace->appendChild($elt_terminee);
+        $elt_idUtilisateur = $doc->createElement('idUtilisateur', $uneTrace->getIdUtilisateur());
+        $elt_trace->appendChild($elt_idUtilisateur);
     }
     // Mise en forme finale
     $doc->formatOutput = true;
@@ -158,21 +131,44 @@ function creerFluxXML($msg, $lesUtilisateurs)
     // renvoie le contenu XML
     return $doc->saveXML();
 }
+
 // ================================================================================================
 
 // création du flux JSON en sortie
-function creerFluxJSON($msg)
+function creerFluxJSON($msg, $uneTrace)
 {
     /* Exemple de code JSON
      {
      "data": {
-     "reponse": "Erreur : authentification incorrecte."
+     "reponse": "Trace créée.",
+     "donnees": {
+     "trace": {
+     "id": "23",
+     "dateHeureDebut": "2018-11-15 16:15:54",
+     "terminee: "0",
+     "idUtilisateur: "3"
      }
      }
+     }
+     }
+     
      */
-    
-    // construction de l'élément "data"
-    $elt_data = ["reponse" => $msg];
+    if ($uneTrace == null) {
+        // construction de l'élément "data"
+        $elt_data = ["reponse" => $msg];
+    }
+    else {
+        $laTrace = array();
+        $laTrace["id"] = $uneTrace->getId();
+        $laTrace["dateHeureDebut"] = $uneTrace->getDateHeureDebut();
+        $laTrace["terminee"] = $uneTrace->getTerminee();
+        $laTrace["idUtilisateur"] = $uneTrace->getIdUtilisateur();
+        $elt_trace = ["trace" => $laTrace];
+        
+        
+        // construction de l'élément "data"
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_trace];
+    }
     
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
@@ -182,4 +178,5 @@ function creerFluxJSON($msg)
 }
 
 // ================================================================================================
-?>
+
+
