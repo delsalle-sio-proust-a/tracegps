@@ -14,7 +14,7 @@ class Rest {
 		$this->recupererLesDonneesEnvoyees();
 	}
 	
-	// Cette méthode envoie la réponse HTTP ; elle reçoit 3 paramètres :
+	// Cette méthode envoie la réponse HTTP ; elle reçoit 3 param ètres :
 	//    $code_reponse : le code numérique à 3 chiffres indiquant l'état de la réponse
 	//    $content_type : le format de la réponse ("application/json; charset=utf-8" ou "application/xml; charset=utf-8")
 	//    $donnees : les données encodées (formatées en Json ou en XML)
