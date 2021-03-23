@@ -73,11 +73,11 @@ else {
                      $nbReponses = sizeof($lesTracesUtilisateur);
                     
                      if ($nbReponses == 0) {
-                         $msg = "Aucune trace.";
+                         $msg = "Aucune trace pour l'utilisateur " . $pseudoConsulte;
                          $code_reponse = 200;
                      }
                      else {
-                         $msg = $nbReponses . " utilisateur(s).";
+                         $msg = $nbReponses . " trace(s) pour l'utilisateur " . $pseudoConsulte;
                          $code_reponse = 200;
                     }
                 }

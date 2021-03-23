@@ -227,19 +227,19 @@ else {
                 $elt_id         = $doc->createElement('id', $unPointDeTrace->getId());
                 $elt_unPointDeTrace->appendChild($elt_id);
             
-                $elt_Latitude     = $doc->createElement('Latitude', $unPointDeTrace->getLatitude());
+                $elt_Latitude     = $doc->createElement('latitude', $unPointDeTrace->getLatitude());
                 $elt_unPointDeTrace->appendChild($elt_Latitude);
             
-                $elt_Longitude    = $doc->createElement('Longitude', $unPointDeTrace->getLongitude());
+                $elt_Longitude    = $doc->createElement('longitude', $unPointDeTrace->getLongitude());
                 $elt_unPointDeTrace->appendChild($elt_Longitude);
             
-                $elt_Altitude     = $doc->createElement('Altitude', $unPointDeTrace->getAltitude());
+                $elt_Altitude     = $doc->createElement('altitude', $unPointDeTrace->getAltitude());
                 $elt_unPointDeTrace->appendChild($elt_Altitude);
             
-                $elt_DateHeure     = $doc->createElement('DateHeure', $unPointDeTrace->getDateHeure());
+                $elt_DateHeure     = $doc->createElement('dateHeure', $unPointDeTrace->getDateHeure());
                 $elt_unPointDeTrace->appendChild($elt_DateHeure);
             
-                $elt_RythmeCardio = $doc->createElement('RythmeCardio', $unPointDeTrace->getRythmeCardio());
+                $elt_RythmeCardio = $doc->createElement('rythmeCardio', $unPointDeTrace->getRythmeCardio());
                 $elt_unPointDeTrace->appendChild($elt_RythmeCardio);
             }
             
