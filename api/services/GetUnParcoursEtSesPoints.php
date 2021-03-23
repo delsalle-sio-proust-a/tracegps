@@ -313,11 +313,11 @@ function creerFluxJSON($msg, $uneTrace)
             {	// crée une ligne dans le tableau
                 $unObjetPoint = array();
                 $unObjetPoint["id"] = $unPointDeTrace->getId();
-                $unObjetPoint["dateHeureDebut"] = $unPointDeTrace->getDateHeureDebut();
-                $unObjetPoint["terminee"] = $unPointDeTrace->getTerminee();
-                $unObjetPoint["dateHeureFin"] = $unPointDeTrace->getDateHeureFin();
-                $unObjetPoint["distance"] = $unPointDeTrace->getDistanceTotale();
-                $unObjetPoint["idUtilisateur"] = $unPointDeTrace->getIdUtilisateur();
+                $unObjetPoint["latitude"] = $unPointDeTrace->getLatitude();
+                $unObjetPoint["longitude"] = $unPointDeTrace->getLongitude();
+                $unObjetPoint["altitude"] = $unPointDeTrace->getAltitude();
+                $unObjetPoint["dateHeure"] = $unPointDeTrace->getDateHeure();
+                $unObjetPoint["rythmeCardiaque"] = $unPointDeTrace->getRythmeCardio();
                 //if ($uneTrace->getNbTraces() > 0)
                 //{   $unObjetUtilisateur["dateDerniereTrace"] = $uneTrace->getDateDerniereTrace();
                 //}
