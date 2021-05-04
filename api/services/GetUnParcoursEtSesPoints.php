@@ -227,19 +227,19 @@ else {
                 $elt_id         = $doc->createElement('id', $unPointDeTrace->getId());
                 $elt_unPointDeTrace->appendChild($elt_id);
             
-                $elt_Latitude     = $doc->createElement('Latitude', $unPointDeTrace->getLatitude());
+                $elt_Latitude     = $doc->createElement('latitude', $unPointDeTrace->getLatitude());
                 $elt_unPointDeTrace->appendChild($elt_Latitude);
             
-                $elt_Longitude    = $doc->createElement('Longitude', $unPointDeTrace->getLongitude());
+                $elt_Longitude    = $doc->createElement('longitude', $unPointDeTrace->getLongitude());
                 $elt_unPointDeTrace->appendChild($elt_Longitude);
             
-                $elt_Altitude     = $doc->createElement('Altitude', $unPointDeTrace->getAltitude());
+                $elt_Altitude     = $doc->createElement('altitude', $unPointDeTrace->getAltitude());
                 $elt_unPointDeTrace->appendChild($elt_Altitude);
             
-                $elt_DateHeure     = $doc->createElement('DateHeure', $unPointDeTrace->getDateHeure());
+                $elt_DateHeure     = $doc->createElement('dateHeure', $unPointDeTrace->getDateHeure());
                 $elt_unPointDeTrace->appendChild($elt_DateHeure);
             
-                $elt_RythmeCardio = $doc->createElement('RythmeCardio', $unPointDeTrace->getRythmeCardio());
+                $elt_RythmeCardio = $doc->createElement('rythmeCardio', $unPointDeTrace->getRythmeCardio());
                 $elt_unPointDeTrace->appendChild($elt_RythmeCardio);
             }
             
@@ -313,11 +313,11 @@ function creerFluxJSON($msg, $uneTrace)
             {	// crée une ligne dans le tableau
                 $unObjetPoint = array();
                 $unObjetPoint["id"] = $unPointDeTrace->getId();
-                $unObjetPoint["dateHeureDebut"] = $unPointDeTrace->getLatitude();
-                $unObjetPoint["terminee"] = $unPointDeTrace->getLongitude();
-                $unObjetPoint["dateHeureFin"] = $unPointDeTrace->getAltitude();
-                $unObjetPoint["distance"] = $unPointDeTrace->getDateHeure();
-                $unObjetPoint["idUtilisateur"] = $unPointDeTrace->getRythmeCardio();
+                $unObjetPoint["latitude"] = $unPointDeTrace->getLatitude();
+                $unObjetPoint["longitude"] = $unPointDeTrace->getLongitude();
+                $unObjetPoint["altitude"] = $unPointDeTrace->getAltitude();
+                $unObjetPoint["dateHeure"] = $unPointDeTrace->getDateHeure();
+                $unObjetPoint["rythmeCardiaque"] = $unPointDeTrace->getRythmeCardio();
                 //if ($uneTrace->getNbTraces() > 0)
                 //{   $unObjetUtilisateur["dateDerniereTrace"] = $uneTrace->getDateDerniereTrace();
                 //}
